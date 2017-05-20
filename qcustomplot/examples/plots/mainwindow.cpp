@@ -47,14 +47,26 @@
 #include <QMessageBox>
 #include <QMetaEnum>
 
+#include <QtNetwork/QUdpSocket>
+
+#include <math.h>
+
+extern int g_demo_index;
+
+
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
   setGeometry(400, 250, 542, 390);
-  
+
+#if 0 /* FIXME : DEBUG : HACK GOLDO */  
   setupDemo(0);
+#else
+  setupDemo(g_demo_index);
+#endif
+
   //setupPlayground(ui->customPlot);
   // 0:  setupQuadraticDemo(ui->customPlot);
   // 1:  setupSimpleDemo(ui->customPlot);
@@ -106,6 +118,9 @@ void MainWindow::setupDemo(int demoIndex)
     case 17: setupAdvancedAxesDemo(ui->customPlot); break;
     case 18: setupColorMapDemo(ui->customPlot); break;
     case 19: setupFinancialDemo(ui->customPlot); break;
+#if 1 /* FIXME : DEBUG : HACK GOLDO */
+    case 20: setupGoldoDemo(ui->customPlot); break;
+#endif
   }
   setWindowTitle("QCustomPlot: "+demoName);
   statusBar()->clearMessage();
@@ -1378,6 +1393,92 @@ void MainWindow::setupFinancialDemo(QCustomPlot *customPlot)
   customPlot->axisRect()->setMarginGroup(QCP::msLeft|QCP::msRight, group);
   volumeAxisRect->setMarginGroup(QCP::msLeft|QCP::msRight, group);
 }
+
+
+#if 1 /* FIXME : DEBUG : HACK GOLDO ++ */
+void MainWindow::setupGoldoDemo(QCustomPlot *customPlot)
+{
+  QVector<double> x(360), y(360);
+
+  demoName = "Goldo Demo";
+
+  printf ("Goldo Demo\n");
+  
+  customPlot->addGraph(); // blue line
+  customPlot->graph(0)->setPen(QPen(QColor(40, 110, 255)));
+  customPlot->graph()->setLineStyle((QCPGraph::LineStyle)0);
+  customPlot->graph()->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle, 2));
+
+  double my_R = 0.2;
+  for (int i=0; i<360; i++) {
+    double my_theta = (2.0 * M_PI / 360.0) * i;
+    if (i<180) {
+      my_R = 0.2;
+    } else if (i<270) {
+      my_R += 0.01;
+    } else {
+      my_R -= 0.01;
+    }
+    my_x[i] = my_R * cos (my_theta);
+    my_y[i] = my_R * sin (my_theta);
+    x[i] = my_x[i];
+    y[i] = my_y[i];
+  }
+  ui->customPlot->graph(0)->setData(x, y);
+
+  customPlot->axisRect()->setupFullAxesBox();
+  customPlot->xAxis->setRange(-2000, 2000);
+  customPlot->yAxis->setRange(-2000, 2000);
+  
+  // setup a timer that repeatedly calls MainWindow::realtimeGoldoSlot:
+  connect(&dataTimer, SIGNAL(timeout()), this, SLOT(realtimeGoldoSlot()));
+  dataTimer.start(0); // Interval 0 means to refresh as fast as possible
+
+  if (!my_sock.bind(1412)) {
+    printf ("my_sock.bind() error\n");
+  }
+}
+
+void MainWindow::realtimeGoldoSlot()
+{
+  static QTime time(QTime::currentTime());
+  QVector<double> x(360), y(360);
+
+  double key = time.elapsed()/1000.0; // time elapsed since start of demo, in seconds
+  static double lastPointKey = 0;
+
+  if (key-lastPointKey > 0.02) // at most add point every 20 ms
+  {
+    int result = my_sock.readDatagram((char *)(void *)(&recv_buf[0]), 360*4*2);
+    if (result > 0) {
+      //printf ("read %d bytes\n", result);
+    }
+    if (result != 360*4*2) {
+      return;
+    }
+
+    for (int i=0; i<360; i++) {
+#if 0
+      double my_x_new = 0.9995065603657316*my_x[i]-0.03141075907812829*my_y[i];
+      double my_y_new = 0.03141075907812829*my_x[i]+0.9995065603657316*my_y[i];
+      my_x[i] = my_x_new;
+      my_y[i] = my_y_new;
+#else
+      my_x[i] = recv_buf[i].x;
+      my_y[i] = recv_buf[i].y;
+#endif
+      x[i] = my_x[i];
+      y[i] = my_y[i];
+    }
+    ui->customPlot->graph(0)->setData(x, y);
+
+    lastPointKey = key;
+  }
+
+  ui->customPlot->replot();
+}
+
+#endif /* FIXME : DEBUG : HACK GOLDO -- */
 
 void MainWindow::realtimeDataSlot()
 {

@@ -46,9 +46,19 @@
 #include <QTimer>
 #include "../../qcustomplot.h" // the header file of QCustomPlot. Don't forget to add it to your project, if you use an IDE, so it gets compiled.
 
+#include <QtNetwork/QUdpSocket>
+
 namespace Ui {
 class MainWindow;
 }
+
+#if 1 /* FIXME : DEBUG : HACK GOLDO */
+typedef struct _my_point_t {
+  float x;
+  float y;
+} my_point_t;
+#endif
+
 
 class MainWindow : public QMainWindow
 {
@@ -79,6 +89,9 @@ public:
   void setupAdvancedAxesDemo(QCustomPlot *customPlot);
   void setupColorMapDemo(QCustomPlot *customPlot);
   void setupFinancialDemo(QCustomPlot *customPlot);
+#if 1 /* FIXME : DEBUG : HACK GOLDO */
+  void setupGoldoDemo(QCustomPlot *customPlot);
+#endif
   
   void setupPlayground(QCustomPlot *customPlot);
   
@@ -87,6 +100,9 @@ private slots:
   void bracketDataSlot();
   void screenShot();
   void allScreenShots();
+#if 1 /* FIXME : DEBUG : HACK GOLDO */
+  void realtimeGoldoSlot();
+#endif
   
 private:
   Ui::MainWindow *ui;
@@ -94,6 +110,12 @@ private:
   QTimer dataTimer;
   QCPItemTracer *itemDemoPhaseTracer;
   int currentDemoIndex;
+#if 1 /* FIXME : DEBUG : HACK GOLDO */
+  double my_x[400];
+  double my_y[400];
+  QUdpSocket my_sock;
+  my_point_t recv_buf[400];
+#endif
 };
 
 #endif // MAINWINDOW_H

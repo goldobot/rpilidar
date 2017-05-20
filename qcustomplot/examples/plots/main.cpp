@@ -26,11 +26,19 @@
 #include <QApplication>
 #include "mainwindow.h"
 
+int g_demo_index;
+
 int main(int argc, char *argv[])
 {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
   QApplication::setGraphicsSystem("raster");
 #endif
+
+  g_demo_index=0;
+  if (argc>1) {
+    g_demo_index = atoi (argv[1]);
+  }
+
   QApplication a(argc, argv);
   MainWindow w;
   w.show();
