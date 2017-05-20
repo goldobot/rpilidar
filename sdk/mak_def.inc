@@ -116,7 +116,9 @@ CXXDEFS +=
 CXXDEFS += $(CDEFS) $(EXTRA_DEFS)
 
 C_INCLUDES += -I.
-CXX_INCLUDES += $(C_INCLUDES)
+# -I/opt/gumstix/include 
+# -I/usr/include/newlib -I/usr/include/newlib/c++/4.8 -I/usr/include/newlib/c++/4.8/arm-none-eabi 
+CXX_INCLUDES += $(C_INCLUDES) 
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C

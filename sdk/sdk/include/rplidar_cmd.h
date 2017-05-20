@@ -139,24 +139,49 @@ typedef struct _rplidar_response_cabin_nodes_t {
 
 #define RPLIDAR_RESP_MEASUREMENT_EXP_SYNCBIT              (0x1<<15)
 
+#if 1 /* FIXME : DEBUG : HACK GOLDO ++ */
 typedef struct _rplidar_response_capsule_measurement_nodes_t {
     _u8                             s_checksum_1; // see [s_checksum_1]
     _u8                             s_checksum_2; // see [s_checksum_1]
     _u16                            start_angle_sync_q6;
     rplidar_response_cabin_nodes_t  cabins[16];
 } __attribute__((packed)) rplidar_response_capsule_measurement_nodes_t;
+#else /* FIXME : DEBUG : HACK GOLDO == */
+typedef struct _rplidar_response_capsule_measurement_nodes_t {
+    _u8                             s_checksum_1; // see [s_checksum_1]
+    _u8                             s_checksum_2; // see [s_checksum_1]
+    _u16                            start_angle_sync_q6;
+    rplidar_response_cabin_nodes_t  cabins[16];
+} rplidar_response_capsule_measurement_nodes_t;
+#endif /* FIXME : DEBUG : HACK GOLDO -- */
 
+#if 1 /* FIXME : DEBUG : HACK GOLDO ++ */
 typedef struct _rplidar_response_device_info_t {
     _u8   model;
     _u16  firmware_version;
     _u8   hardware_version;
     _u8   serialnum[16];
 } __attribute__((packed)) rplidar_response_device_info_t;
+#else /* FIXME : DEBUG : HACK GOLDO == */
+typedef struct _rplidar_response_device_info_t {
+    _u8   model;
+    _u16  firmware_version;
+    _u8   hardware_version;
+    _u8   serialnum[16];
+} rplidar_response_device_info_t;
+#endif /* FIXME : DEBUG : HACK GOLDO -- */
 
+#if 1 /* FIXME : DEBUG : HACK GOLDO ++ */
 typedef struct _rplidar_response_device_health_t {
     _u8   status;
     _u16  error_code;
 } __attribute__((packed)) rplidar_response_device_health_t;
+#else /* FIXME : DEBUG : HACK GOLDO == */
+typedef struct _rplidar_response_device_health_t {
+    _u8   status;
+    _u16  error_code;
+} rplidar_response_device_health_t;
+#endif /* FIXME : DEBUG : HACK GOLDO -- */
 
 #if defined(_WIN32)
 #pragma pack()
