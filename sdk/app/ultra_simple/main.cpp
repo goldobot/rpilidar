@@ -298,6 +298,23 @@ int main(int argc, const char * argv[]) {
 	      my_y[pos] = my_R * sin (my_theta);
             }
 
+	    for (int pos = 0; pos < (int)count ; ++pos) {
+		float theta = nodes[pos].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT;
+		if(my_x[pos] < 0 || (theta < 20500 && theta > 2500)) {
+		    my_x[pos] = 0;
+		    my_y[pos] = 0;
+#if 0 //ZSK DEBUG
+		} else {
+		    if (my_x[pos] != 0 && my_y[pos]!= 0)
+		    printf("ZSK my_x[pos]:%f my_y[pos]:%f theta:%f\n", my_x[pos], my_y[pos],theta);
+#endif
+		}
+	    }
+#if 0 //ZSK DEBUG
+            printf("################################################################################\n");
+	    sleep(1);
+#endif
+
 	    send_to_viewer();
 #endif /* FIXME : DEBUG : HACK GOLDO -- */
 
