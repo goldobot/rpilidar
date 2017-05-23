@@ -58,9 +58,9 @@ static inline void delay(_word_size_t ms){
 
 
 #if 1 /* FIXME : DEBUG : HACK GOLDO ++ */
-float my_x[360];
-float my_y[360];
-char send_buf[360*4*2];
+float my_x[720];
+float my_y[720];
+char send_buf[720*4*2];
 
 typedef struct _my_point_t {
   float x;
@@ -95,7 +95,7 @@ int send_to_viewer()
 
   my_p = (my_point_t *)((void *)(&send_buf[0]));
 
-  for (int i=0; i<360; i++) {
+  for (int i=0; i<720; i++) {
     my_p->x = my_x[i];
     my_p->y = my_y[i];
     my_p++;
@@ -286,7 +286,7 @@ int main(int argc, const char * argv[]) {
 
 
 #if 1 /* FIXME : DEBUG : HACK GOLDO ++ */
-	    for (int pos = 0; pos < 360 ; ++pos) {
+	    for (int pos = 0; pos < count ; ++pos) {
 	      my_x[pos] = 0.0;
 	      my_y[pos] = 0.0;
             }
